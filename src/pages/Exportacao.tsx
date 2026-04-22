@@ -12,6 +12,8 @@ import { fmtMonth, fmtNumber, monthsBetween } from "@/lib/format";
 import { Download, FileSpreadsheet, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const Exportacao = () => {
   const { isAdmin, filiais: userFiliais } = useAuth();
@@ -74,6 +76,21 @@ const Exportacao = () => {
     toast.success("CSV gerado!");
   };
 
+  const exportPdf = () => {
+    const doc = new jsPDF({ orientation: "landscape" });
+    doc.setFontSize(14);
+    doc.text(`Copagril — Projeção ${fmtMonth(mesSel)}`, 14, 14);
+    autoTable(doc, {
+      startY: 20,
+      head: [["Filial", "SKU Vigente", "Mês", "Qtd. Proj."]],
+      body: rows.map((r) => [r.Filial, r["SKU Vigente"], r.Mês, fmtNumber(r["Qtd. Proj."], 2)]),
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [34, 79, 41] },
+    });
+    doc.save(`copagril-projecao-${mesSel}.pdf`);
+    toast.success("PDF gerado!");
+  };
+
   return (
     <div className="animate-fade-in">
       <PageHeader title="Exportação de Base" description="Selecione o mês de projeção e exporte para Excel/CSV." />
@@ -93,6 +110,9 @@ const Exportacao = () => {
           </Button>
           <Button onClick={exportCsv} variant="outline" disabled={rows.length === 0}>
             <Download className="mr-2 h-4 w-4" /> Exportar CSV
+          </Button>
+          <Button onClick={exportPdf} variant="outline" disabled={rows.length === 0}>
+            <FileText className="mr-2 h-4 w-4" /> Exportar PDF
           </Button>
           <Badge variant="outline">{rows.length} linhas</Badge>
         </div>
