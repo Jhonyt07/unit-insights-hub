@@ -1,11 +1,15 @@
 import { useAuth } from "@/hooks/useAuth";
+import { Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "@/components/Logo";
 import { Clock, RefreshCw, LogOut } from "lucide-react";
 
 const PendingApproval = () => {
-  const { signOut, refreshProfile, status, user } = useAuth();
+  const { signOut, refreshProfile, status, user, loading } = useAuth();
+  if (!loading && !user) return <Navigate to="/auth" replace />;
+  if (!loading && status === "approved") return <Navigate to="/" replace />;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
       <Card className="max-w-md w-full shadow-elegant animate-fade-in">
