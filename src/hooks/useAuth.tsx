@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [filiais, setFiliais] = useState<number[]>([]);
 
   const loadProfile = async (uid: string) => {
+    setLoading(true);
     const [{ data: profile }, { data: rolesData }, { data: filiaisData }] = await Promise.all([
       supabase.from("profiles").select("status").eq("id", uid).maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", uid),
@@ -37,6 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setStatus((profile?.status as UserStatus) ?? null);
     setRoles((rolesData ?? []).map((r) => r.role as AppRole));
     setFiliais((filiaisData ?? []).map((f) => f.filial_id));
+    setLoading(false);
   };
 
   const refreshProfile = async () => {
@@ -49,12 +51,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
-        // defer to avoid deadlock
-        setTimeout(() => loadProfile(sess.user.id), 0);
+        setLoading(true);
+        setTimeout(() => {
+          loadProfile(sess.user.id).catch(() => setLoading(false));
+        }, 0);
       } else {
         setStatus(null);
         setRoles([]);
         setFiliais([]);
+        setLoading(false);
       }
     });
 
