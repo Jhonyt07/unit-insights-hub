@@ -3,8 +3,19 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import { AuthProvider } from "@/hooks/useAuth";
+import { RequireAuth } from "@/components/RouteGuard";
+import { AppLayout } from "@/components/AppLayout";
+import AuthPage from "./pages/Auth";
+import PendingApproval from "./pages/PendingApproval";
+import Dashboard from "./pages/Dashboard";
+import Overview from "./pages/Overview";
+import Faturado from "./pages/Faturado";
+import Projecao from "./pages/Projecao";
+import Exportacao from "./pages/Exportacao";
+import AdminUsuarios from "./pages/admin/Usuarios";
+import UploadExcel from "./pages/admin/UploadExcel";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -14,11 +25,24 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/pending" element={<PendingApproval />} />
+            <Route element={<RequireAuth><AppLayout /></RequireAuth>}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/overview" element={<Overview />} />
+              <Route path="/faturado" element={<Faturado />} />
+              <Route path="/projecao" element={<Projecao />} />
+              <Route path="/exportacao" element={<Exportacao />} />
+            </Route>
+            <Route element={<RequireAuth adminOnly><AppLayout /></RequireAuth>}>
+              <Route path="/admin/usuarios" element={<AdminUsuarios />} />
+              <Route path="/admin/upload" element={<UploadExcel />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
