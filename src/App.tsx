@@ -13,7 +13,7 @@ import Overview from "./pages/Overview";
 import Faturado from "./pages/Faturado";
 import Projecao from "./pages/Projecao";
 import Exportacao from "./pages/Exportacao";
-import AdminUsuarios from "./pages/admin/Usuarios";
+import AdminMeses from "./pages/admin/Meses";
 import UploadExcel from "./pages/admin/UploadExcel";
 import NotFound from "./pages/NotFound";
 
@@ -37,7 +37,7 @@ const App = () => (
               <Route path="/exportacao" element={<Exportacao />} />
             </Route>
             <Route element={<RequireAuth adminOnly><AppLayout /></RequireAuth>}>
-              <Route path="/admin/usuarios" element={<AdminUsuarios />} />
+              <Route path="/admin/meses" element={<AdminMeses />} />
               <Route path="/admin/upload" element={<UploadExcel />} />
             </Route>
             <Route path="*" element={<NotFound />} />
