@@ -181,14 +181,17 @@ export type Database = {
       }
       meses_habilitados: {
         Row: {
+          habilitado: boolean
           id: number
           mes: string
         }
         Insert: {
+          habilitado?: boolean
           id: number
           mes: string
         }
         Update: {
+          habilitado?: boolean
           id?: number
           mes?: string
         }

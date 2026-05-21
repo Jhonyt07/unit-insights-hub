@@ -1,0 +1,1 @@
+ALTER TABLE public.meses_habilitados ADD COLUMN IF NOT EXISTS habilitado boolean NOT NULL DEFAULT false;
