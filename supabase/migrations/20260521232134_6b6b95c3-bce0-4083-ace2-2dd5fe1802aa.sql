@@ -1,0 +1,1 @@
+ALTER TABLE public.meses_habilitados ADD CONSTRAINT meses_habilitados_mes_key UNIQUE (mes);

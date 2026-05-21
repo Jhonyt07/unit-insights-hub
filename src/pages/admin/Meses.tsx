@@ -15,7 +15,8 @@ const AdminMeses = () => {
   const toggleMes = async (mes: string, currentlyEnabled: boolean) => {
     const { error } = await supabase
       .from("meses_habilitados")
-      .upsert({ mes, habilitado: !currentlyEnabled }, { onConflict: "mes" });
+      .update({ habilitado: !currentlyEnabled })
+      .eq("mes", mes);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["meses_habilitados"] });
   };
@@ -43,7 +44,7 @@ const AdminMeses = () => {
               }`}
             >
               <Checkbox checked={m.habilitado} onCheckedChange={() => toggleMes(m.mes, m.habilitado)} />
-              <span className="font-medium">{fmtMonth(m.mes)}</span>
+              <span className="font-medium">{m.mes}</span>
             </label>
           ))}
         </div>
