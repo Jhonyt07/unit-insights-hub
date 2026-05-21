@@ -181,24 +181,15 @@ export type Database = {
       }
       meses_habilitados: {
         Row: {
-          created_at: string
-          habilitado: boolean
-          habilitado_por: string | null
-          id: string
+          id: number
           mes: string
         }
         Insert: {
-          created_at?: string
-          habilitado?: boolean
-          habilitado_por?: string | null
-          id?: string
+          id: number
           mes: string
         }
         Update: {
-          created_at?: string
-          habilitado?: boolean
-          habilitado_por?: string | null
-          id?: string
+          id?: number
           mes?: string
         }
         Relationships: []
