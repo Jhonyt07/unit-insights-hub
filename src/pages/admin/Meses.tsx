@@ -15,7 +15,7 @@ const AdminMeses = () => {
   const toggleMes = async (mes: string, currentlyEnabled: boolean) => {
     const { error } = await supabase
       .from("meses_habilitados")
-      .upsert({ mes, habilitado: !currentlyEnabled }, { onConflict: "mes" });
+      .upsert([{ mes, habilitado: !currentlyEnabled }], { onConflict: "mes" });
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["meses_habilitados"] });
   };
