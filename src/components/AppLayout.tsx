@@ -8,7 +8,7 @@ import {
   Receipt,
   TrendingUp,
   Download,
-  Users,
+  CalendarRange,
   Upload,
   LogOut,
   Menu,
@@ -26,7 +26,7 @@ const navItems = [
 ];
 
 const adminItems = [
-  { to: "/admin/usuarios", label: "Usuários", icon: Users },
+  { to: "/admin/meses", label: "Meses Habilitados", icon: CalendarRange },
   { to: "/admin/upload", label: "Upload Excel", icon: Upload },
 ];
 

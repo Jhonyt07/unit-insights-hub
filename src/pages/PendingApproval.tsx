@@ -26,7 +26,7 @@ const PendingApproval = () => {
           <p className="text-sm text-muted-foreground">
             {status === "rejected"
               ? "Seu cadastro foi rejeitado. Entre em contato com o administrador."
-              : "Sua conta foi criada com sucesso. Um administrador precisa aprovar seu acesso e liberar as filiais que você poderá visualizar."}
+              : "Sua conta foi criada. Solicite ao administrador que aprove seu acesso e libere suas filiais pelo painel Lovable Cloud → Users."}
           </p>
           <p className="text-xs text-muted-foreground">Conta: {user?.email}</p>
           <div className="flex gap-2 pt-2">
