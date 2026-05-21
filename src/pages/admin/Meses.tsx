@@ -43,7 +43,7 @@ const AdminMeses = () => {
               }`}
             >
               <Checkbox checked={m.habilitado} onCheckedChange={() => toggleMes(m.mes, m.habilitado)} />
-              <span className="font-medium">{fmtMonth(m.mes)}</span>
+              <span className="font-medium">{m.mes}</span>
             </label>
           ))}
         </div>
