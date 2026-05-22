@@ -39,7 +39,8 @@ const App = () => (
             </Route>
             <Route element={<RequireAuth adminOnly><AppLayout /></RequireAuth>}>
               <Route path="/admin/meses" element={<AdminMeses />} />
-              <Route path="/admin/upload" element={<UploadExcel />} />
+              <Route path="/admin/skus" element={<AdminSkus />} />
+              <Route path="/admin/filiais" element={<AdminFiliais />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
