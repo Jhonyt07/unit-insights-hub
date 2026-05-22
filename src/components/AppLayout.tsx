@@ -9,7 +9,8 @@ import {
   TrendingUp,
   Download,
   CalendarRange,
-  Upload,
+  Package,
+  Building2,
   LogOut,
   Menu,
   ChevronLeft,
@@ -26,8 +27,9 @@ const navItems = [
 ];
 
 const adminItems = [
+  { to: "/admin/skus", label: "SKUs", icon: Package },
+  { to: "/admin/filiais", label: "Filiais", icon: Building2 },
   { to: "/admin/meses", label: "Meses Habilitados", icon: CalendarRange },
-  { to: "/admin/upload", label: "Upload Excel", icon: Upload },
 ];
 
 export const AppLayout = () => {
