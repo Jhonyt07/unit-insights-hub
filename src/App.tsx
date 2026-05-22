@@ -14,7 +14,8 @@ import Faturado from "./pages/Faturado";
 import Projecao from "./pages/Projecao";
 import Exportacao from "./pages/Exportacao";
 import AdminMeses from "./pages/admin/Meses";
-import UploadExcel from "./pages/admin/UploadExcel";
+import AdminSkus from "./pages/admin/Skus";
+import AdminFiliais from "./pages/admin/Filiais";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,7 +39,8 @@ const App = () => (
             </Route>
             <Route element={<RequireAuth adminOnly><AppLayout /></RequireAuth>}>
               <Route path="/admin/meses" element={<AdminMeses />} />
-              <Route path="/admin/upload" element={<UploadExcel />} />
+              <Route path="/admin/skus" element={<AdminSkus />} />
+              <Route path="/admin/filiais" element={<AdminFiliais />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
