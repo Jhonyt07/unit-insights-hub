@@ -16,51 +16,33 @@ export type Database = {
     Tables: {
       dados_overview: {
         Row: {
-          created_at: string
-          filial_id: number
-          id: string
-          mes: string
-          sku_codigo: string
-          updated_at: string
-          updated_by: string | null
+          created_at: string | null
+          filial: number
+          id: number
+          mes_referencia: string
+          sku: string
+          updated_at: string | null
           valor: number
         }
         Insert: {
-          created_at?: string
-          filial_id: number
-          id?: string
-          mes: string
-          sku_codigo: string
-          updated_at?: string
-          updated_by?: string | null
+          created_at?: string | null
+          filial: number
+          id?: number
+          mes_referencia: string
+          sku: string
+          updated_at?: string | null
           valor?: number
         }
         Update: {
-          created_at?: string
-          filial_id?: number
-          id?: string
-          mes?: string
-          sku_codigo?: string
-          updated_at?: string
-          updated_by?: string | null
+          created_at?: string | null
+          filial?: number
+          id?: number
+          mes_referencia?: string
+          sku?: string
+          updated_at?: string | null
           valor?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "dados_overview_filial_id_fkey"
-            columns: ["filial_id"]
-            isOneToOne: false
-            referencedRelation: "filiais"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "dados_overview_sku_codigo_fkey"
-            columns: ["sku_codigo"]
-            isOneToOne: false
-            referencedRelation: "skus"
-            referencedColumns: ["codigo"]
-          },
-        ]
+        Relationships: []
       }
       faturado: {
         Row: {
