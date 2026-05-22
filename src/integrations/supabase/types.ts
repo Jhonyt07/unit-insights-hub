@@ -16,33 +16,58 @@ export type Database = {
     Tables: {
       dados_overview: {
         Row: {
-          created_at: string | null
-          filial: number
-          id: number
-          mes_referencia: string
-          sku: string
-          updated_at: string | null
+          created_at: string
+          filial_id: number
+          id: string
+          mes: string
+          sku_codigo: string
+          updated_at: string
+          updated_by: string | null
           valor: number
         }
         Insert: {
-          created_at?: string | null
-          filial: number
-          id?: number
-          mes_referencia: string
-          sku: string
-          updated_at?: string | null
+          created_at?: string
+          filial_id: number
+          id?: string
+          mes: string
+          sku_codigo: string
+          updated_at?: string
+          updated_by?: string | null
           valor?: number
         }
         Update: {
-          created_at?: string | null
-          filial?: number
-          id?: number
-          mes_referencia?: string
-          sku?: string
-          updated_at?: string | null
+          created_at?: string
+          filial_id?: number
+          id?: string
+          mes?: string
+          sku_codigo?: string
+          updated_at?: string
+          updated_by?: string | null
           valor?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "dados_overview_filial_id_fkey"
+            columns: ["filial_id"]
+            isOneToOne: false
+            referencedRelation: "filiais"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dados_overview_mes_fkey"
+            columns: ["mes"]
+            isOneToOne: false
+            referencedRelation: "meses_habilitados"
+            referencedColumns: ["mes"]
+          },
+          {
+            foreignKeyName: "dados_overview_sku_codigo_fkey"
+            columns: ["sku_codigo"]
+            isOneToOne: false
+            referencedRelation: "skus"
+            referencedColumns: ["codigo"]
+          },
+        ]
       }
       faturado: {
         Row: {
@@ -74,6 +99,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "faturado_filial_fkey"
+            columns: ["filial_id"]
+            isOneToOne: false
+            referencedRelation: "filiais"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "faturado_filial_id_fkey"
             columns: ["filial_id"]
             isOneToOne: false
@@ -81,7 +113,21 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "faturado_mes_fkey"
+            columns: ["mes"]
+            isOneToOne: false
+            referencedRelation: "meses_habilitados"
+            referencedColumns: ["mes"]
+          },
+          {
             foreignKeyName: "faturado_sku_codigo_fkey"
+            columns: ["sku_codigo"]
+            isOneToOne: false
+            referencedRelation: "skus"
+            referencedColumns: ["codigo"]
+          },
+          {
+            foreignKeyName: "faturado_sku_fkey"
             columns: ["sku_codigo"]
             isOneToOne: false
             referencedRelation: "skus"
@@ -95,18 +141,21 @@ export type Database = {
           created_at: string
           id: number
           nome: string
+          updated_at: string
         }
         Insert: {
           ativo?: boolean
           created_at?: string
           id: number
           nome: string
+          updated_at?: string
         }
         Update: {
           ativo?: boolean
           created_at?: string
           id?: number
           nome?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -146,6 +195,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "indicadores_mes_filial_fkey"
+            columns: ["filial_id"]
+            isOneToOne: false
+            referencedRelation: "filiais"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "indicadores_mes_filial_id_fkey"
             columns: ["filial_id"]
             isOneToOne: false
@@ -153,7 +209,21 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "indicadores_mes_mes_fkey"
+            columns: ["mes"]
+            isOneToOne: false
+            referencedRelation: "meses_habilitados"
+            referencedColumns: ["mes"]
+          },
+          {
             foreignKeyName: "indicadores_mes_sku_codigo_fkey"
+            columns: ["sku_codigo"]
+            isOneToOne: false
+            referencedRelation: "skus"
+            referencedColumns: ["codigo"]
+          },
+          {
+            foreignKeyName: "indicadores_mes_sku_fkey"
             columns: ["sku_codigo"]
             isOneToOne: false
             referencedRelation: "skus"
@@ -208,22 +278,28 @@ export type Database = {
       }
       skus: {
         Row: {
+          ativo: boolean
           codigo: string
           created_at: string
           descricao: string
-          full_label: string
+          full_label: string | null
+          updated_at: string
         }
         Insert: {
+          ativo?: boolean
           codigo: string
           created_at?: string
           descricao: string
-          full_label: string
+          full_label?: string | null
+          updated_at?: string
         }
         Update: {
+          ativo?: boolean
           codigo?: string
           created_at?: string
           descricao?: string
-          full_label?: string
+          full_label?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
