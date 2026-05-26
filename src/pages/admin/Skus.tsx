@@ -8,26 +8,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Package } from "lucide-react";
 import { toast } from "sonner";
 
-type SkuRow = { codigo: string; descricao: string; ativo: boolean; full_label?: string };
+type Unidade = "SC" | "TN";
+type SkuRow = { codigo: string; descricao: string; ativo: boolean; unidade: Unidade };
 
 const AdminSkus = () => {
   const qc = useQueryClient();
@@ -36,19 +29,22 @@ const AdminSkus = () => {
   const [editing, setEditing] = useState<SkuRow | null>(null);
   const [codigo, setCodigo] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [unidade, setUnidade] = useState<Unidade>("SC");
   const [ativo, setAtivo] = useState(true);
 
   const reset = () => {
     setEditing(null);
     setCodigo("");
     setDescricao("");
+    setUnidade("SC");
     setAtivo(true);
   };
 
-  const startEdit = (s: SkuRow) => {
+  const startEdit = (s: any) => {
     setEditing(s);
     setCodigo(s.codigo);
     setDescricao(s.descricao);
+    setUnidade((s.unidade as Unidade) ?? "SC");
     setAtivo(s.ativo);
     setOpen(true);
   };
@@ -61,12 +57,14 @@ const AdminSkus = () => {
     if (editing) {
       const { error } = await supabase
         .from("skus")
-        .update({ descricao: desc, ativo })
+        .update({ descricao: desc, ativo, unidade } as any)
         .eq("codigo", editing.codigo);
       if (error) return toast.error(error.message);
       toast.success("SKU atualizado");
     } else {
-      const { error } = await supabase.from("skus").insert({ codigo: code, descricao: desc, ativo });
+      const { error } = await supabase
+        .from("skus")
+        .insert({ codigo: code, descricao: desc, ativo, unidade } as any);
       if (error) return toast.error(error.message);
       toast.success("SKU criado");
     }
@@ -81,31 +79,22 @@ const AdminSkus = () => {
     if (error) return toast.error(error.message);
     toast.success("SKU excluído");
     qc.invalidateQueries({ queryKey: ["skus"] });
+    qc.invalidateQueries({ queryKey: ["overview"] });
+    qc.invalidateQueries({ queryKey: ["dash-proj"] });
   };
 
   return (
     <div className="animate-fade-in">
-      <PageHeader
-        title="SKUs"
-        description="Gerencie manualmente os SKUs disponíveis no sistema."
-      />
+      <PageHeader title="SKUs" description="Cadastre manualmente os SKUs. SCs aceitam projeção apenas em múltiplos de 1,5." />
       <Card className="p-6 shadow-card">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Package className="h-5 w-5 text-primary" />
             <h3 className="font-semibold">{skus.length} SKUs cadastrados</h3>
           </div>
-          <Dialog
-            open={open}
-            onOpenChange={(v) => {
-              setOpen(v);
-              if (!v) reset();
-            }}
-          >
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
             <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-1" /> Novo SKU
-              </Button>
+              <Button><Plus className="h-4 w-4 mr-1" /> Novo SKU</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -114,22 +103,27 @@ const AdminSkus = () => {
               <div className="space-y-4 py-2">
                 <div className="space-y-2">
                   <Label htmlFor="codigo">Código</Label>
-                  <Input
-                    id="codigo"
-                    value={codigo}
-                    onChange={(e) => setCodigo(e.target.value)}
-                    disabled={!!editing}
-                    placeholder="Ex.: 12345"
-                  />
+                  <Input id="codigo" value={codigo} onChange={(e) => setCodigo(e.target.value)} disabled={!!editing} placeholder="Ex.: 12345" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="descricao">Descrição</Label>
-                  <Input
-                    id="descricao"
-                    value={descricao}
-                    onChange={(e) => setDescricao(e.target.value)}
-                    placeholder="Descrição do produto"
-                  />
+                  <Input id="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder="Descrição do produto" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Unidade</Label>
+                  <RadioGroup value={unidade} onValueChange={(v) => setUnidade(v as Unidade)} className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <RadioGroupItem value="SC" /> <span>SC (Saca)</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <RadioGroupItem value="TN" /> <span>TN (Tonelada)</span>
+                    </label>
+                  </RadioGroup>
+                  {unidade === "SC" && (
+                    <p className="text-xs text-muted-foreground">
+                      Projeções deste SKU serão arredondadas para múltiplos de <strong>1,5</strong> (1,5 / 3 / 4,5 / 6 ...).
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <Switch id="ativo" checked={ativo} onCheckedChange={setAtivo} />
@@ -137,7 +131,7 @@ const AdminSkus = () => {
                 </div>
                 {codigo && descricao && (
                   <p className="text-xs text-muted-foreground">
-                    Rótulo completo: <span className="font-mono">{codigo} - {descricao}</span>
+                    Rótulo: <span className="font-mono">{codigo} - {descricao}</span>
                   </p>
                 )}
               </div>
@@ -154,7 +148,8 @@ const AdminSkus = () => {
             <TableRow>
               <TableHead className="w-32">Código</TableHead>
               <TableHead>Descrição</TableHead>
-              <TableHead className="w-24">Ativo</TableHead>
+              <TableHead className="w-24">Unidade</TableHead>
+              <TableHead className="w-20">Ativo</TableHead>
               <TableHead className="w-32 text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -163,6 +158,9 @@ const AdminSkus = () => {
               <TableRow key={s.codigo}>
                 <TableCell className="font-mono">{s.codigo}</TableCell>
                 <TableCell>{s.descricao}</TableCell>
+                <TableCell>
+                  <Badge variant={s.unidade === "SC" ? "default" : "secondary"}>{s.unidade ?? "SC"}</Badge>
+                </TableCell>
                 <TableCell>{s.ativo ? "Sim" : "Não"}</TableCell>
                 <TableCell className="text-right">
                   <Button size="icon" variant="ghost" onClick={() => startEdit(s)}>
@@ -176,7 +174,7 @@ const AdminSkus = () => {
             ))}
             {skus.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
                   Nenhum SKU cadastrado.
                 </TableCell>
               </TableRow>

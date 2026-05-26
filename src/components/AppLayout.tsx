@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   Table2,
-  Receipt,
   TrendingUp,
-  Download,
   CalendarRange,
   Package,
   Building2,
@@ -21,9 +19,7 @@ import { Badge } from "@/components/ui/badge";
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/overview", label: "Overview", icon: Table2 },
-  { to: "/faturado", label: "Faturado", icon: Receipt },
   { to: "/projecao", label: "Projeção", icon: TrendingUp },
-  { to: "/exportacao", label: "Exportação", icon: Download },
 ];
 
 const adminItems = [
