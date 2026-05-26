@@ -69,72 +69,6 @@ export type Database = {
           },
         ]
       }
-      faturado: {
-        Row: {
-          cliente_nome: string | null
-          created_at: string
-          filial_id: number
-          id: string
-          mes: string
-          sku_codigo: string
-          valor: number
-        }
-        Insert: {
-          cliente_nome?: string | null
-          created_at?: string
-          filial_id: number
-          id?: string
-          mes: string
-          sku_codigo: string
-          valor?: number
-        }
-        Update: {
-          cliente_nome?: string | null
-          created_at?: string
-          filial_id?: number
-          id?: string
-          mes?: string
-          sku_codigo?: string
-          valor?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "faturado_filial_fkey"
-            columns: ["filial_id"]
-            isOneToOne: false
-            referencedRelation: "filiais"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "faturado_filial_id_fkey"
-            columns: ["filial_id"]
-            isOneToOne: false
-            referencedRelation: "filiais"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "faturado_mes_fkey"
-            columns: ["mes"]
-            isOneToOne: false
-            referencedRelation: "meses_habilitados"
-            referencedColumns: ["mes"]
-          },
-          {
-            foreignKeyName: "faturado_sku_codigo_fkey"
-            columns: ["sku_codigo"]
-            isOneToOne: false
-            referencedRelation: "skus"
-            referencedColumns: ["codigo"]
-          },
-          {
-            foreignKeyName: "faturado_sku_fkey"
-            columns: ["sku_codigo"]
-            isOneToOne: false
-            referencedRelation: "skus"
-            referencedColumns: ["codigo"]
-          },
-        ]
-      }
       filiais: {
         Row: {
           ativo: boolean
@@ -158,78 +92,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
-      }
-      indicadores_mes: {
-        Row: {
-          a_expedir: number | null
-          created_at: string
-          estoque_atual: number | null
-          filial_id: number
-          id: string
-          mes: string
-          produzido: number | null
-          projetado: number | null
-          sku_codigo: string
-        }
-        Insert: {
-          a_expedir?: number | null
-          created_at?: string
-          estoque_atual?: number | null
-          filial_id: number
-          id?: string
-          mes: string
-          produzido?: number | null
-          projetado?: number | null
-          sku_codigo: string
-        }
-        Update: {
-          a_expedir?: number | null
-          created_at?: string
-          estoque_atual?: number | null
-          filial_id?: number
-          id?: string
-          mes?: string
-          produzido?: number | null
-          projetado?: number | null
-          sku_codigo?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "indicadores_mes_filial_fkey"
-            columns: ["filial_id"]
-            isOneToOne: false
-            referencedRelation: "filiais"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "indicadores_mes_filial_id_fkey"
-            columns: ["filial_id"]
-            isOneToOne: false
-            referencedRelation: "filiais"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "indicadores_mes_mes_fkey"
-            columns: ["mes"]
-            isOneToOne: false
-            referencedRelation: "meses_habilitados"
-            referencedColumns: ["mes"]
-          },
-          {
-            foreignKeyName: "indicadores_mes_sku_codigo_fkey"
-            columns: ["sku_codigo"]
-            isOneToOne: false
-            referencedRelation: "skus"
-            referencedColumns: ["codigo"]
-          },
-          {
-            foreignKeyName: "indicadores_mes_sku_fkey"
-            columns: ["sku_codigo"]
-            isOneToOne: false
-            referencedRelation: "skus"
-            referencedColumns: ["codigo"]
-          },
-        ]
       }
       meses_habilitados: {
         Row: {
@@ -283,6 +145,7 @@ export type Database = {
           created_at: string
           descricao: string
           full_label: string | null
+          unidade: Database["public"]["Enums"]["sku_unidade"]
           updated_at: string
         }
         Insert: {
@@ -291,6 +154,7 @@ export type Database = {
           created_at?: string
           descricao: string
           full_label?: string | null
+          unidade?: Database["public"]["Enums"]["sku_unidade"]
           updated_at?: string
         }
         Update: {
@@ -299,6 +163,7 @@ export type Database = {
           created_at?: string
           descricao?: string
           full_label?: string | null
+          unidade?: Database["public"]["Enums"]["sku_unidade"]
           updated_at?: string
         }
         Relationships: []
@@ -373,6 +238,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "editor" | "leitor"
+      sku_unidade: "SC" | "TN"
       user_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
@@ -502,6 +368,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "editor", "leitor"],
+      sku_unidade: ["SC", "TN"],
       user_status: ["pending", "approved", "rejected"],
     },
   },
