@@ -10,15 +10,23 @@ import AuthPage from "./pages/Auth";
 import PendingApproval from "./pages/PendingApproval";
 import Dashboard from "./pages/Dashboard";
 import Overview from "./pages/Overview";
-import Faturado from "./pages/Faturado";
 import Projecao from "./pages/Projecao";
-import Exportacao from "./pages/Exportacao";
 import AdminMeses from "./pages/admin/Meses";
 import AdminSkus from "./pages/admin/Skus";
 import AdminFiliais from "./pages/admin/Filiais";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60_000,
+      gcTime: 5 * 60_000,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -33,9 +41,7 @@ const App = () => (
             <Route element={<RequireAuth><AppLayout /></RequireAuth>}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/overview" element={<Overview />} />
-              <Route path="/faturado" element={<Faturado />} />
               <Route path="/projecao" element={<Projecao />} />
-              <Route path="/exportacao" element={<Exportacao />} />
             </Route>
             <Route element={<RequireAuth adminOnly><AppLayout /></RequireAuth>}>
               <Route path="/admin/meses" element={<AdminMeses />} />
