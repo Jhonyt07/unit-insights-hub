@@ -2,27 +2,40 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useFiliais } from "@/hooks/useAppData";
+import { useFiliais, useMesesHabilitados, useSkus } from "@/hooks/useAppData";
 import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { fmtMonth, fmtNumber, monthsBetween } from "@/lib/format";
+import { fmtNumber } from "@/lib/format";
 import { Loader2, Search } from "lucide-react";
 
-const RANGE: [string, string] = ["2025-01-01", "2026-05-01"];
+const MES_ORDER = [
+  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro",
+];
 
 const Projecao = () => {
   const { isAdmin, filiais: userFiliais } = useAuth();
   const { data: filiais = [] } = useFiliais();
-  const visibleFiliais = useMemo(() => filiais.filter((f) => isAdmin || userFiliais.includes(f.id)), [filiais, isAdmin, userFiliais]);
+  const { data: meses = [] } = useMesesHabilitados();
+  const { data: skus = [] } = useSkus();
+  const visibleFiliais = useMemo(
+    () => filiais.filter((f) => isAdmin || userFiliais.includes(f.id)),
+    [filiais, isAdmin, userFiliais]
+  );
   const [filialSel, setFilialSel] = useState<number | "all">("all");
   const [search, setSearch] = useState("");
-  const months = useMemo(() => monthsBetween(RANGE[0], RANGE[1]), []);
+
+  const months = useMemo(() => {
+    const set = new Set(meses.map((m) => m.mes));
+    return MES_ORDER.filter((m) => set.has(m));
+  }, [meses]);
+
   const filialFilter = filialSel === "all" ? visibleFiliais.map((f) => f.id) : [filialSel];
 
-  const { data, isLoading } = useQuery({
+  const { data = [], isLoading } = useQuery({
     queryKey: ["projecao", filialFilter.join(",")],
     enabled: filialFilter.length > 0,
     queryFn: async () => {
@@ -35,22 +48,16 @@ const Projecao = () => {
     },
   });
 
-  const { data: skusData = [] } = useQuery({
-    queryKey: ["skus"],
-    queryFn: async () => (await supabase.from("skus").select("*")).data ?? [],
-  });
-
   const pivot = useMemo(() => {
     const m = new Map<string, Map<string, number>>();
-    for (const r of data ?? []) {
+    for (const r of data) {
       if (!m.has(r.sku_codigo)) m.set(r.sku_codigo, new Map());
-      const mes = (r.mes as string).slice(0, 10);
-      m.get(r.sku_codigo)!.set(mes, (m.get(r.sku_codigo)!.get(mes) ?? 0) + Number(r.valor));
+      m.get(r.sku_codigo)!.set(r.mes, (m.get(r.sku_codigo)!.get(r.mes) ?? 0) + Number(r.valor));
     }
     return m;
   }, [data]);
 
-  const skuMap = useMemo(() => new Map(skusData.map((s) => [s.codigo, s])), [skusData]);
+  const skuMap = useMemo(() => new Map(skus.map((s: any) => [s.codigo, s])), [skus]);
   const rows = useMemo(() => {
     let list = Array.from(pivot.keys()).map((c) => ({ codigo: c, sku: skuMap.get(c) }));
     if (search) {
@@ -70,7 +77,7 @@ const Projecao = () => {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="Projeção" description="Visão consolidada das projeções. Atualiza automaticamente conforme você preenche na tela Overview." />
+      <PageHeader title="Projeção" description="Visão consolidada das projeções. Atualiza automaticamente conforme você preenche no Overview." />
       <Card className="p-4 mb-4 shadow-card">
         <div className="flex flex-col md:flex-row gap-3">
           <div className="flex-1">
@@ -99,21 +106,27 @@ const Projecao = () => {
             <thead className="sticky top-0 z-20">
               <tr className="bg-primary text-primary-foreground">
                 <th className="text-left px-3 py-2 sticky left-0 bg-primary z-30 min-w-[280px]">SKU</th>
-                {months.map((m) => <th key={m} className="px-2 py-2 text-right min-w-[80px]">{fmtMonth(m)}</th>)}
+                <th className="px-2 py-2 text-center min-w-[56px]">Un.</th>
+                {months.map((m) => <th key={m} className="px-2 py-2 text-right min-w-[80px]">{m}</th>)}
               </tr>
               <tr className="bg-primary/90 text-primary-foreground text-[11px]">
                 <th className="text-left px-3 py-1.5 sticky left-0 bg-primary/90 z-30">Totais</th>
+                <th />
                 {months.map((m) => <td key={m} className="px-2 py-1.5 text-right font-semibold tabular-nums">{fmtNumber(totals.get(m) ?? 0, 0)}</td>)}
               </tr>
             </thead>
             <tbody>
               {rows.map((r, i) => {
                 const inner = pivot.get(r.codigo);
+                const unidade = (r.sku as any)?.unidade ?? "SC";
                 return (
                   <tr key={r.codigo} className={`border-b border-border ${i % 2 === 0 ? "bg-background" : "bg-muted/30"} hover:bg-accent/20`}>
                     <td className="px-3 py-1.5 sticky left-0 bg-inherit z-10">
                       <div className="font-medium text-primary">{r.codigo}</div>
-                      <div className="text-[10px] text-muted-foreground line-clamp-1">{r.sku?.descricao ?? "-"}</div>
+                      <div className="text-[10px] text-muted-foreground line-clamp-1">{(r.sku as any)?.descricao ?? "-"}</div>
+                    </td>
+                    <td className="text-center">
+                      <Badge variant={unidade === "SC" ? "default" : "secondary"} className="text-[10px]">{unidade}</Badge>
                     </td>
                     {months.map((m) => <td key={m} className="px-2 py-1 text-right tabular-nums">{fmtNumber(inner?.get(m), 2)}</td>)}
                   </tr>
